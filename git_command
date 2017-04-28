@@ -1,0 +1,51 @@
+「git 勉強用のメモ」
+
+コマンド
+
+git初期構成   ... .git以下のconfigファイルに登録するようのデータをコマンドで直接記入する例
+git config --global user.name "[自分の名前]"  // gitにおける自分の名前の管理用
+git config --global user.email "[自分のメールアドレス]"  // gitにおける自分のメールアドレス管理用
+git config --global color.ui auto  // コマンド出力のカラーピッカーの設定
+git config -l  // configファイルの設定を表示する
+
+(commit内の文字コード設定は.vimrcを変更する)
+
+git init  //リポジトリの初期化  .gitがリポジトリとなり、宣言した場所のディレクトリはリポジトリに対するワークスツリーになる
+git add . // indexに変更分のファイルを全て追加
+git add [ファイル名]  // indexに変更分の指定ファイルを追加
+git diff // indexに登録未満のファイルの変更差分を表示（addリクエスト前のファイル変更を表示する）
+git diff head  // 前回commit時点(HEAD)からの差分を表示する
+git add -u  // ワークツリー内で管理している全てのファイルの状態をindexに保存
+git commit // 変更を保存する（コメント記入にてエディタが起動する）
+git status  // 次回commitにて変更されるファイルのプレビュー
+git commit -a -m ""  // git add -u + git commit と同義
+git log  // commitの履歴を表示する
+git log -2 -p --pretty=short  // -2 ... commitの表示数限界を設定 , -p ... diffを表示 , -pretty=short ... commitコメントの一行分のみ表示する
+git add -p [ファイル名]  // 対象ファイルの変更分の登録を動的に決定できる  y/n
+git diff --cached  // index登録分とcommitオブジェクトとの差分を表示する
+git commit -v  // エディタにてstatusの内容も確認して、commitのコメントができる
+git add -A  // git管理対象ファイルとワークツリー内にある.gitignoreで無視していないファイル全てをindexに保存する ... git add . && git add -u と同義
+git commit -m "[コメント]" [ファイル名]  // 指定ファイルのみをコミットする
+git show  // コミットの変更内容を表示する、commitパスも指定できる
+git reset [ファイル名]  // indexに記録したファイルを削除する、引数なしだと最新commit時のindex状態に戻る
+git log [ファイル名]  // 引数のファイル名が登録（変更）されたcommitを検索し表示する
+git log --grep="[検索パターン]"  // logコメントに書いた文字列を検索し、適合したものを表示する
+git log --grep="[検索パターン]" --grep="[検索パターン]"  // はor検索になる
+git log --all-match --grep="[検索パターン]" --grep="[検索パターン]"  // はand検索
+git blame [ファイル名]  // 指定ファイルの各行の作成・変更された時点のコミットオブジェクト名を表示する
+
+変更を取り消す
+git revert [コミットのオブジェクト名]  // 指定されたコミットを削除する、また削除する際にはそれ自身がcommitしたようになるためにコメントを記入できる
+git checkout [ファイル名]  // 指定ファイルの内容をaddされた直後に戻す
+git checkout head [ファイル名]  // 指定ファイルの内容を編集前に戻す（commit位置のheadに移動する）
+git reset head^  // 前回のcommitオブジェクトを捨てる（headが前々回のcommitになる）また、ワークツリーの内容は変化しない
+git reset --hard head^  // 前回commitの内容と前回commitにおけるワークツリーの変更内容をすべて捨てる
+git reset --hard head  // 最新commit以来の全てのワークツリーの変更を取り消す
+git commit --amend -am "" // 前回commitを変更する
+
+2個以上前のcommitを変更する
+git rebase -i head~2  // 最新commitの2つ前のcommit以後を書き換える 書き換えたいcommitオブジェクトの先頭文字「pick」を「edit」に変更し保存する
+↓
+git commit --amend -a  // commitのコメント変更内容とワークツリーの変更を記録
+↓
+git rebase --continue  // 変更したcommitオブジェクト以降のcommitを反映
